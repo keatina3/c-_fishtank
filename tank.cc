@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 #include <cstdlib>
 #include <vector>
 #include "fish.h"
@@ -8,48 +9,98 @@
 Tank::Tank(){
     Fish *tmp;
     int m=150, t=10, s=5;
-
     tot_count[0]=m; tot_count[1]= t; tot_count[2]=s;
-    for(int i=0;i<m;i++){
-        tmp = new Minnow();         // tests here
-        tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
+
+    try {
+        for(int i=0;i<m;i++){
+            tmp = new Minnow();         // tests here
+            tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
+        }
+    } catch (std::bad_alloc const &err) {
+        std::cerr << "Error in allocating Minnows" << std::endl;
+        std::cerr << err.what() << std::endl;
+        exit(1);
     }
-    for(int i=0;i<t;i++){
-        tmp = new Tuna();         // tests here
-        tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
+    
+    try {
+        for(int i=0;i<t;i++){
+            tmp = new Tuna();         // tests here
+            tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
+        }
+    } catch (std::bad_alloc const &err) {
+        std::cerr << "Error in allocating Tuna" << std::endl;
+        std::cerr << err.what() << std::endl;
+        exit(1);
     }
-    for(int i=0;i<s;i++){
-        tmp = new Shark();         // tests here
-        tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
+
+    try {
+        for(int i=0;i<s;i++){
+            tmp = new Shark();         // tests here
+            tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
+        }
+    } catch (std::bad_alloc const &err) {
+        std::cerr << "Error in allocating Tuna" << std::endl;
+        std::cerr << err.what() << std::endl;
+        exit(1);
     }
 }
 
 Tank::Tank(const int minnows, const int tuna, const int sharks){
+    assert(minnows > 0 && tuna > 0 && sharks > 0);
+
     Fish *tmp;
     int m=minnows, t=tuna, s=sharks;
-
+    
     tot_count[0]=m; tot_count[1]= t; tot_count[2]=s;
-    for(int i=0;i<m;i++){
-        tmp = new Minnow();         // tests here
-        tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
+    
+    try {
+        tot_count[0]=m; tot_count[1]= t; tot_count[2]=s;
+        for(int i=0;i<m;i++){
+            tmp = new Minnow();         // tests here
+            tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
+        }
+    } catch (std::bad_alloc const &err) {
+        std::cerr << "Error in allocating Minnows" << std::endl;
+        std::cerr << err.what() << std::endl;
+        exit(1);
     }
-    for(int i=0;i<t;i++){
-        tmp = new Tuna();           // tests here
-        tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
+    
+    try {
+        for(int i=0;i<t;i++){
+            tmp = new Tuna();         // tests here
+            tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
+        }
+    } catch (std::bad_alloc const &err) {
+        std::cerr << "Error in allocating Tuna" << std::endl;
+        std::cerr << err.what() << std::endl;
+        exit(1);
     }
-    for(int i=0;i<s;i++){
-        tmp = new Shark();          // tests here
-        tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
+
+    try {
+        for(int i=0;i<s;i++){
+            tmp = new Shark();         // tests here
+            tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
+        }
+    } catch (std::bad_alloc const &err) {
+        std::cerr << "Error in allocating Tuna" << std::endl;
+        std::cerr << err.what() << std::endl;
+        exit(1);
     }
 }
 
 int Tank::get_count(const int fish_id) const {
+    assert(fish_id >=0 && fish_id < 3);
+
     int count = tot_count[fish_id];
 
     return count;
 }
 
 bool Tank::fish_present(const int *site, const int fish_id) const {
+    assert(fish_id >=0 && fish_id < 3);
+    assert(site[0] < 5 && site[0] >=0 && site[1] < 5 && 
+                site[1] >= 0 && site[2] < 5 && site[2] >=0);
+    
     const Site *src;
     
     src = &tank[site[0]][site[1]][site[2]];
@@ -82,8 +133,8 @@ void Tank::sweep(){
     
     // use proper error management here too // 
     if(tot_count[0]==0 || tot_count[1]==0 || tot_count[2]==0){
-        std::cout << "Fish died out." << std::endl;
-        exit(1);
+        std::cout << std::endl << "FISH DIED OUT." << std::endl << std::endl;
+        exit(0);
     } 
     
     fish_id = rand()%3;
@@ -107,6 +158,10 @@ void Tank::sweep(){
 }
 
 void Tank::move(const int *site, int *dest_coords, const int fish_id){
+    assert(fish_id >=0 && fish_id < 3);
+    assert(site[0] < 5 && site[0] >=0 && site[1] < 5 && 
+                site[1] >= 0 && site[2] < 5 && site[2] >=0);
+    
     Site *src, *dest;
     Fish *fish_tmp;
     int count, rand_fish;
@@ -116,24 +171,39 @@ void Tank::move(const int *site, int *dest_coords, const int fish_id){
     count = src->get_count(fish_id);
     rand_fish = rand()%count;
 
-    fish_tmp = src->get_fish(fish_id, rand_fish);
+    try {
+        fish_tmp = src->get_fish(fish_id, rand_fish);
+    } catch (std::range_error const &err) {
+        std::cerr << "Index of Fish on site out of range" << std::endl;
+        std::cerr << err.what() << std::endl;
+        exit(1);
+    }
+   
+    // come back to this // 
+    fish_tmp->move(site, dest_coords);
     
-    if(fish_tmp->get_moves()==4 && (fish_id==1 || fish_id==2)){
+    if(fish_tmp->get_moves()>4 && (fish_id==1 || fish_id==2)){
         src->del_fish(fish_id, rand_fish, 1);
-        dest_coords[0] = site[0]; dest_coords[1] = site[1]; dest_coords[2] = site[2];
         tot_count[fish_id]--;
         return;
     }
 
-    fish_tmp->move(site, dest_coords);
-
     dest = &tank[dest_coords[0]][dest_coords[1]][dest_coords[2]];
-
+    
     dest->add_fish(fish_tmp);
-    src->del_fish(fish_id, rand_fish, 0);
+    try {
+        src->del_fish(fish_id, rand_fish, 0);
+    } catch (std::range_error const &err) {
+        std::cerr << "Index of Fish on site out of range" << std::endl;
+        std::cerr << err.what() << std::endl;
+        exit(1);
+    }
 }
 
 int Tank::check_outcomes(const int *site, void (Tank::**outcome_fns)(const int *)){
+    assert(site[0] < 5 && site[0] >=0 && site[1] < 5 && 
+                site[1] >= 0 && site[2] < 5 && site[2] >=0);
+    
     Site *src;
     int index;
 
@@ -170,53 +240,93 @@ int Tank::check_outcomes(const int *site, void (Tank::**outcome_fns)(const int *
 }
 
 void Tank::minnow_breed(const int *site){
+    assert(site[0] < 5 && site[0] >=0 && site[1] < 5 && 
+                site[1] >= 0 && site[2] < 5 && site[2] >=0);
+    
     Fish *tmp;
     
     std::cout << "minnow breed" << std::endl;
     
-    for(int i=0;i<3;i++){
-        tmp = new Minnow();
-        tank[site[0]][site[1]][site[2]].add_fish(tmp);
+    try {
+        for(int i=0;i<3;i++){
+            tmp = new Minnow();
+            tank[site[0]][site[1]][site[2]].add_fish(tmp);
+        }
+    } catch (std::bad_alloc const &err) {
+        std::cerr << "Error in allocating Minnows" << std::endl;
+        std::cerr << err.what() << std::endl;
+        exit(1);
     }
-
+    
     tot_count[0] += 3;
 }
 
 void Tank::tuna_breed(const int *site){
+    assert(site[0] < 5 && site[0] >=0 && site[1] < 5 && 
+                site[1] >= 0 && site[2] < 5 && site[2] >=0);
+    
     Fish *tmp;
     
     std::cout << "tuna breed" << std::endl;
 
-    tmp = new Tuna();
-    tank[site[0]][site[1]][site[2]].add_fish(tmp);
+    try {
+        tmp = new Tuna();
+        tank[site[0]][site[1]][site[2]].add_fish(tmp);
+    } catch (std::bad_alloc const &err) {
+        std::cerr << "Error in allocating Tuna" << std::endl;
+        std::cerr << err.what() << std::endl;
+        exit(1);
+    }
+    
 
     tot_count[1]++;
 }
 
 void Tank::shark_breed(const int *site){
+    assert(site[0] < 5 && site[0] >=0 && site[1] < 5 && 
+                site[1] >= 0 && site[2] < 5 && site[2] >=0);
+    
     Fish *tmp;
     
     std::cout << "Shark breed" << std::endl;
     
-    tmp = new Shark();
-    tank[site[0]][site[1]][site[2]].add_fish(tmp);
-
+    try {
+        tmp = new Shark();
+        tank[site[0]][site[1]][site[2]].add_fish(tmp);
+    } catch (std::bad_alloc const &err) {
+        std::cerr << "Error in allocating Shark" << std::endl;
+        std::cerr << err.what() << std::endl;
+        exit(1);
+    }
+    
     tot_count[2]++;
 }
 
 void Tank::tuna_feed(const int *site){
+    assert(site[0] < 5 && site[0] >=0 && site[1] < 5 && 
+                site[1] >= 0 && site[2] < 5 && site[2] >=0);
+    
     Site *src;
 
     std::cout << "Tuna feed" << std::endl;
     
     src = &tank[site[0]][site[1]][site[2]];
 
-    tot_count[0] -= src->kill_fish(0);
+    try {
+        tot_count[0] -= src->kill_fish(0);
+    } catch(std::exception const &err){
+        std::cerr << "Error deleting Minnows" << std::endl;
+        std::cerr << err.what() << std::endl;
+        exit(1);
+    }
     
     src->feed_fish(1);
 }
 
 void Tank::shark_feed(const int *site){
+    assert(site[0] < 5 && site[0] >=0 && site[1] < 5 && 
+                site[1] >= 0 && site[2] < 5 && site[2] >=0);
+    
     Site *src;
     int count;
 
@@ -225,13 +335,23 @@ void Tank::shark_feed(const int *site){
     src = &tank[site[0]][site[1]][site[2]];
     count = src->get_count(1);
 
-    src->del_fish(1, rand()%count, 1);
+    try {
+        src->del_fish(1, rand()%count, 1);
+    } catch(std::exception const &err){
+        std::cerr << "Error deleting Tuna" << std::endl;
+        std::cerr << err.what() << std::endl;
+        exit(1);
+    }
+    
     tot_count[1] -= 1;
 
     src->feed_fish(2);
 }
 
 void Tank::feeding_frenzy(const int *site){
+    assert(site[0] < 5 && site[0] >=0 && site[1] < 5 && 
+                site[1] >= 0 && site[2] < 5 && site[2] >=0);
+    
     Site *src, *nbr_site;
     int nbr[3];
     
@@ -246,8 +366,15 @@ void Tank::feeding_frenzy(const int *site){
             for(int k=-1;k<2;k++){            
                 nbr[2] = ((( site[2]+k )%5) + 5 )%5;
                 nbr_site = &tank[nbr[0]][nbr[1]][nbr[2]];
-                if(fish_present(nbr, 0))
-                    tot_count[0] -= nbr_site->kill_fish(0);
+                if(fish_present(nbr, 0)){
+                    try {
+                        tot_count[0] -= nbr_site->kill_fish(0);
+                    } catch(std::exception const &err){
+                        std::cerr << "Error deleting Minnows during frenzy" << std::endl;
+                        std::cerr << err.what() << std::endl;
+                        exit(1);
+                    }
+                }
             }
         }
     }

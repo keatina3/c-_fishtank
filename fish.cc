@@ -18,6 +18,7 @@ int Fish::get_moves() const {
 
 void Fish::feed(){
     hungry = false;
+    moves = 0;
 }
 
 bool Fish::is_hungry() const {
