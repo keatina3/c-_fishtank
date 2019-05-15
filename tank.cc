@@ -1,10 +1,9 @@
+#include <iostream>
 #include <cstdlib>
 #include <vector>
 #include "fish.h"
 #include "site.h"
 #include "tank.h"
-
-#include <iostream>
 
 Tank::Tank(){
     Fish *tmp;
@@ -19,7 +18,7 @@ Tank::Tank(){
         tmp = new Tuna();         // tests here
         tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
     }
-    for(int i=0;i<m;i++){
+    for(int i=0;i<s;i++){
         tmp = new Shark();         // tests here
         tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
     }
@@ -38,9 +37,41 @@ Tank::Tank(const int minnows, const int tuna, const int sharks){
         tmp = new Tuna();           // tests here
         tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
     }
-    for(int i=0;i<m;i++){
+    for(int i=0;i<s;i++){
         tmp = new Shark();          // tests here
         tank[rand()%5][rand()%5][rand()%5].add_fish(tmp);
+    }
+}
+
+int Tank::get_count(const int fish_id) const {
+    int count = tot_count[fish_id];
+
+    return count;
+}
+
+bool Tank::fish_present(const int *site, const int fish_id) const {
+    const Site *src;
+    
+    src = &tank[site[0]][site[1]][site[2]];
+     
+    if(src->get_count(fish_id) > 0)
+        return 1;
+    else
+        return 0;
+}
+
+void Tank::print() const{
+    const Site *tmp;
+
+    for(int k=0;k<5;k++){
+        for(int i=0;i<5;i++){
+            for(int j=0;j<5;j++){
+                tmp = &tank[i][j][k];
+                std::cout << "(" << tmp->get_count(0) << "," << tmp->get_count(1) << "," << tmp->get_count(2) << ")";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << std::endl << std::endl;
     }
 }
 
@@ -48,10 +79,12 @@ void Tank::sweep(){
     int fish_id, p_move, num_out;;
     int src[3], dest[3];
     void (Tank::*outcome_fns[6])(const int *);
-
+    
     // use proper error management here too // 
-    if(tot_count[0]==0 || tot_count[1]==0 || tot_count[2]==0)
+    if(tot_count[0]==0 || tot_count[1]==0 || tot_count[2]==0){
+        std::cout << "Fish died out." << std::endl;
         exit(1);
+    } 
     
     fish_id = rand()%3;
     while(true){
@@ -66,8 +99,8 @@ void Tank::sweep(){
     if(p_move!=0)
         move(src, dest, fish_id);
     else
-        dest[0] = src[0]; dest[1] = src[1]; dest[2] = src[2];
-
+        dest[0] = src[0], dest[1] = src[1], dest[2] = src[2];
+    
     num_out = check_outcomes(dest, outcome_fns);
     if(num_out)
         (this->*outcome_fns[rand()%num_out])(dest);
@@ -77,17 +110,17 @@ void Tank::move(const int *site, int *dest_coords, const int fish_id){
     Site *src, *dest;
     Fish *fish_tmp;
     int count, rand_fish;
-
+    
     src = &tank[site[0]][site[1]][site[2]];
     
     count = src->get_count(fish_id);
-    
     rand_fish = rand()%count;
 
     fish_tmp = src->get_fish(fish_id, rand_fish);
     
     if(fish_tmp->get_moves()==4 && (fish_id==1 || fish_id==2)){
         src->del_fish(fish_id, rand_fish, 1);
+        dest_coords[0] = site[0]; dest_coords[1] = site[1]; dest_coords[2] = site[2];
         tot_count[fish_id]--;
         return;
     }
@@ -106,7 +139,7 @@ int Tank::check_outcomes(const int *site, void (Tank::**outcome_fns)(const int *
 
     src = &tank[site[0]][site[1]][site[2]];
     index = 0;
-
+    
     if(src->get_count(0) > 1){
         outcome_fns[index] = &Tank::minnow_breed;
         index++;
@@ -116,6 +149,7 @@ int Tank::check_outcomes(const int *site, void (Tank::**outcome_fns)(const int *
         index++;
     }
     if(src->count_fed(2) > 1){
+        std::cout << "fed count = " << src->count_fed(2) << std::endl;
         outcome_fns[index] = &Tank::shark_breed;
         index++;
     }
@@ -135,17 +169,6 @@ int Tank::check_outcomes(const int *site, void (Tank::**outcome_fns)(const int *
     return index;
 }
 
-bool Tank::fish_present(const int *site, const int fish_id) const {
-    const Site *src;
-    
-    src = &tank[site[0]][site[1]][site[2]];
-     
-    if(src->get_count(fish_id) > 0)
-        return 1;
-    else
-        return 0;
-}
-
 void Tank::minnow_breed(const int *site){
     Fish *tmp;
     
@@ -161,9 +184,9 @@ void Tank::minnow_breed(const int *site){
 
 void Tank::tuna_breed(const int *site){
     Fish *tmp;
-
-    std::cout << "tuna breed" << std::endl;
     
+    std::cout << "tuna breed" << std::endl;
+
     tmp = new Tuna();
     tank[site[0]][site[1]][site[2]].add_fish(tmp);
 
@@ -216,15 +239,12 @@ void Tank::feeding_frenzy(const int *site){
 
     src = &tank[site[0]][site[1]][site[2]];
     
-    //src->kill_fish(0);
-
     for(int i=-1;i<2;i++){
         nbr[0] = ((( site[0]+i )%5) + 5 )%5;
         for(int j=-1;j<2;j++){
             nbr[1] = ((( site[1]+j )%5) + 5 )%5;
             for(int k=-1;k<2;k++){            
                 nbr[2] = ((( site[2]+k )%5) + 5 )%5;
-                //std::cout << "loc = " << nbr[0] << "," << nbr[1] << "," << nbr[2] << std::endl;
                 nbr_site = &tank[nbr[0]][nbr[1]][nbr[2]];
                 if(fish_present(nbr, 0))
                     tot_count[0] -= nbr_site->kill_fish(0);

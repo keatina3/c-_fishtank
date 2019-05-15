@@ -15,7 +15,7 @@ all: $(FILES)
 .PHONY: test clean
 
 test: all
-	./$(TARGET)
+	./$(TARGET) -m 95000 -t 350 -s 17
 
 clean:
 	$(RM) $(OBJECTS) $(TARGET)
