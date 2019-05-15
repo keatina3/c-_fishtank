@@ -1,4 +1,4 @@
-# C++ Aquatic Simulation
+## C++ Aquatic Simulation
 
 This program deals with a simple agent-based model of an aquatic system, idealized as a three dimensional cubic grid of with L= 5 points in each direction and periodic boundary conditions. Consider three species of
 fish:
