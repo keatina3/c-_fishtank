@@ -44,6 +44,16 @@ int Site::get_count(const int fish_id) const {
     return tmp; 
 }
 
+int Site::count_fed(const int fish_id) const {
+    int count=0;
+
+    for(unsigned int i = fish[fish_id].size()-1; i>=0; i--)
+        if(fish[fish_id][i]->is_hungry())
+            count++;
+    
+    return count;
+}
+
 void Site::feed_fish(const int fish_id){ 
     for(unsigned int i = fish[fish_id].size()-1; i>=0; i--)
         if(fish[fish_id][i]->is_hungry())

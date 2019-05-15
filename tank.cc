@@ -43,8 +43,9 @@ Tank::Tank(const int minnows, const int tuna, const int sharks){
 }
 
 void Tank::sweep(){
-    int fish_id, p_move;
+    int fish_id, p_move, num_out;;
     int src[3], dest[3];
+    void (Tank::*outcomes[6])(const int *);
 
     // use proper error management here too // 
     if(tot_count[0]==0 || tot_count[1]==0 || tot_count[2]==0)
@@ -61,27 +62,24 @@ void Tank::sweep(){
     p_move = rand()%10;
      
     if(p_move!=0)
-        move(src, fish_id);
+        move(src, dest, fish_id);
     else
         dest[0] = src[0]; dest[1] = src[1]; dest[2] = src[2];
+
+    num_out = check_outcomes(dest, outcomes);
+    if(num_out)
+        (this->*outcomes[rand()%num_out])(dest);
 }
 
-bool Tank::fish_present(const int *site, const int fish_id) const {
-    if(fish_count[fish_id][site[0]][site[1]][site[2]] > 0)
-        return 1;
-    else
-        return 0;
-}
-
-void Tank::move(const int *site, const int fish_id){
+void Tank::move(const int *site, int *dest_coords, const int fish_id){
     Site *src, *dest;
     Fish *fish_tmp;
-    int count, rand_fish, dest_coords[3];
+    int count, rand_fish;
 
     src = &tank[site[0]][site[1]][site[2]];
     
     count = src->get_count(fish_id);
-
+    
     rand_fish = rand()%count;
 
     fish_tmp = src->get_fish(fish_id, rand_fish);
@@ -94,8 +92,50 @@ void Tank::move(const int *site, const int fish_id){
     src->del_fish(fish_id, rand_fish, 0);
 }
 
-int Tank::check_outcomes(const int *site){
+int Tank::check_outcomes(const int *site, void (Tank::**outcomes)(const int *)){
+    Site *src;
+    int index;
 
+    src = &tank[site[0]][site[1]][site[2]];
+    index = 0;
+
+    if(src->get_count(0) > 1){
+        outcomes[index] = &Tank::minnow_breed;
+        index++;
+    }
+    if(src->count_fed(1) > 1){
+        outcomes[index] = &Tank::tuna_breed;
+        index++;
+    }
+    if(src->count_fed(2) > 1){
+        outcomes[index] = &Tank::shark_breed;
+        index++;
+    }
+    if(fish_present(site, 0) && fish_present(site, 1)){
+        outcomes[index] = &Tank::tuna_feed;
+        index++;
+    }
+    if(fish_present(site, 1) && fish_present(site, 2)){
+        outcomes[index] = &Tank::shark_feed;
+        index++;
+    }
+    if(fish_present(site,0) && fish_present(site,2)){
+        outcomes[index] = &Tank::feeding_frenzy;
+        index++;
+    }
+
+    return index;
+}
+
+bool Tank::fish_present(const int *site, const int fish_id) const {
+    const Site *src;
+    
+    src = &tank[site[0]][site[1]][site[2]];
+     
+    if(src->get_count(fish_id) > 0)
+        return 1;
+    else
+        return 0;
 }
 
 void Tank::minnow_breed(const int *site){
@@ -126,9 +166,6 @@ void Tank::tuna_feed(const int *site){
 
     src = &tank[site[0]][site[1]][site[2]];
 
-    // need other way to fix this //
-    //for(int i=src->get_count(0)-1; i>=0; i--)
-    //    src->del_fish(0, i, 1);
     src->kill_fish(0);
 
     src->feed_fish(1);
@@ -152,9 +189,6 @@ void Tank::feeding_frenzy(const int *site){
 
     src = &tank[site[0]][site[1]][site[2]];
 
-    // need other way to fix this //
-    //for(int i=src->get_count(0)-1; i>=0; i--)
-    //    src->del_fish(0, i, 1);
     src->kill_fish(0);
 
     for(int i=-1;i<2;i++){

@@ -5,7 +5,7 @@ class Tank {
 private:
     Site tank[5][5][5];     // change to dynamic when program working //
     int tot_count[3];
-    int fish_count[3][5][5][5];      // 0 = minnows, 1 = tuna, 2 = sharks //
+    //int fish_count[3][5][5][5];      // 0 = minnows, 1 = tuna, 2 = sharks //
 
 public:
     Tank();
@@ -14,11 +14,11 @@ public:
     
     //int get_count(const int fish_id) const;
     void sweep();
+    void move(const int *site, int *dest, const int fish_id);
     bool fish_present(const int *site, const int fish_id) const;
-    void move(const int *site, const int fish_id);
 
-    int check_outcomes(const int *site);
-
+    int check_outcomes(const int *site, void (Tank::**outcomes)(const int *));
+    
     void minnow_breed(const int *site);
     void tuna_breed(const int *site);
     void shark_breed(const int *site);
