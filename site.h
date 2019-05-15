@@ -1,11 +1,12 @@
 #ifndef _SITE_H_
 #define _SITE_H_
 
+// vector of Fish pointers //
 typedef std::vector<Fish*> Fish_vec;
 
 class Site {
 private:
-    std::vector<Fish_vec> fish;
+    std::vector<Fish_vec> fish;     // stores all fish on Site in 3 vectors //
 
 public:
     Site();

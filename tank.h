@@ -10,7 +10,8 @@ public:
     Tank();
     Tank(const int minnows, const int tuna, const int sharks);
     ~Tank(){};
-    
+   
+    const Site* get_site(const int *site) const; 
     int get_count(const int fish_id) const;
     bool fish_present(const int *site, const int fish_id) const;
     void print() const;
@@ -26,5 +27,7 @@ public:
     void shark_feed(const int *site);
     void feeding_frenzy(const int *site);
 };
+
+std::ostream &operator<<(std::ostream &os, const Tank &tank);
 
 #endif

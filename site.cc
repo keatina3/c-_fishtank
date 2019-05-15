@@ -7,8 +7,8 @@
 #include "site.h"
 
 Site::Site(){
-    try {
-        fish.resize(3);
+    try {       // testing bad memory alloc //
+        fish.resize(3);     // resizing to 3. One vector for each fish type //
     } catch(std::bad_alloc const &err) {
         std::cerr << "Bad allocation on Site" << std::endl;
         std::cerr << err.what() << std::endl;
@@ -23,8 +23,9 @@ Site::~Site(){
             delete (*f);
 }
 
+// returns ptr to Fish type fish_id @ index //
 Fish *Site::get_fish(const int fish_id, const int index) const {
-    // insert out of bounds tests //
+    // throw/catch out of bounds tests //
     if(index >= (int)fish[fish_id].size() || fish_id < 0 || fish_id > 2)
         throw std::range_error(__FILE__);
     
@@ -32,10 +33,10 @@ Fish *Site::get_fish(const int fish_id, const int index) const {
     return tmp;
 }
 
+// adds fish of type fish_id to Site //
 void Site::add_fish(Fish *new_fish){
-    // insert null ptr exception //
-
     int id = new_fish->get_id();
+
     try {
         fish[id].push_back(new_fish);
     } catch(std::bad_alloc const &err) {
@@ -45,8 +46,9 @@ void Site::add_fish(Fish *new_fish){
     }
 }
 
+// deletes a fish from vector on site. If "kill", also frees fish entirely //
 void Site::del_fish(const int fish_id, const int index, const bool kill){
-    // insert error checking for correct index & fish id
+    // custom throw to demonstrate throwing an error message //
     if(index >= (int)fish[fish_id].size() || fish_id < 0 || fish_id > 2){
         std::stringstream err_msg;
         err_msg << "Dummy error message for out-of-range error";
@@ -60,13 +62,15 @@ void Site::del_fish(const int fish_id, const int index, const bool kill){
     try {
         fish[fish_id].erase(fish[fish_id].begin() + index);
     } catch(std::exception const &err) {
-        std::cerr << "Error deleting fish." << std::endl;
+        std::cerr << "Error deleting fish from vector." << std::endl;
         std::cerr << err.what() << std::endl;
         exit(1);
     }
 }
 
+// returns total # of fish of type fish_id on Site //
 int Site::get_count(const int fish_id) const {
+    // assert to make sure fish_id is a valid number (0,1,2) //
     assert(fish_id >= 0 && fish_id < 3);
     
     int tmp = fish[fish_id].size();
@@ -74,6 +78,7 @@ int Site::get_count(const int fish_id) const {
     return tmp; 
 }
 
+// returns number of "fed" fish of type fish_id at Site //
 int Site::count_fed(const int fish_id) const {
     assert(fish_id >= 0 && fish_id < 3);
     
@@ -87,6 +92,7 @@ int Site::count_fed(const int fish_id) const {
     return count;
 }
 
+// feeds all fish of type fish_id at Site //
 void Site::feed_fish(const int fish_id){ 
     assert(fish_id >= 0 && fish_id < 3);
     
@@ -97,6 +103,7 @@ void Site::feed_fish(const int fish_id){
     }
 }
 
+// kills & deletes all fish of type fish_id at Site //
 int Site::kill_fish(const int fish_id){
     assert(fish_id >= 0 && fish_id < 3);
     
@@ -107,7 +114,7 @@ int Site::kill_fish(const int fish_id){
             sum++;
         }
     } catch(std::exception const &err) {
-        throw err;
+        throw err;      // demonstrating throwing lower error back up to Tank function //
     }
 
     return sum;

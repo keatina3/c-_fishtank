@@ -42,7 +42,7 @@ int main(int argc, char **argv){
         std::cout << "Total count of fish: " << tank.get_count(0) << "," << tank.get_count(1) << "," << tank.get_count(2) << std::endl;
         std::cout << "====================================================" << std::endl;
         if(verbose) 
-            tank.print();
+            std::cout << tank;
         tank.sweep();
     }
 
