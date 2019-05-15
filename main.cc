@@ -9,8 +9,14 @@
 int main(int argc, char **argv){
     Tank t(100, 10, 1);    
     srand(time(NULL));
+    int count;
 
-    t.sweep();
+    count = 0;
+    
+    while(true){
+        t.sweep();
+        std::cout << "count = " << ++count << std::endl;
+    }
 
     return 0;
 }

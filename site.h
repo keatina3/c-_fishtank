@@ -15,7 +15,7 @@ public:
     int get_count(const int fish_id) const;
     int count_fed(const int fish_id) const;
     void feed_fish(const int fish_id);      // fill in this function //
-    void kill_fish(const int fish_id);
+    int kill_fish(const int fish_id);
 };
 
 #endif

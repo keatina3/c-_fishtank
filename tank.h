@@ -17,7 +17,7 @@ public:
     void move(const int *site, int *dest, const int fish_id);
     bool fish_present(const int *site, const int fish_id) const;
 
-    int check_outcomes(const int *site, void (Tank::**outcomes)(const int *));
+    int check_outcomes(const int *site, void (Tank::**outcome_fns)(const int *));
     
     void minnow_breed(const int *site);
     void tuna_breed(const int *site);

@@ -18,8 +18,6 @@ public:
     virtual void move(const int *src, int *coords)=0;
 };
 
-// NEED DERIVED CONSTRUCTORS //
-
 class Minnow : public Fish {
 public:
     Minnow();

@@ -2,6 +2,8 @@
 #include "fish.h"
 #include "site.h"
 
+#include <iostream>
+
 Site::Site(){
     fish.resize(3);
 }
@@ -47,7 +49,7 @@ int Site::get_count(const int fish_id) const {
 int Site::count_fed(const int fish_id) const {
     int count=0;
 
-    for(unsigned int i = fish[fish_id].size()-1; i>=0; i--)
+    for(unsigned int i=0;i<fish[fish_id].size(); i++)
         if(fish[fish_id][i]->is_hungry())
             count++;
     
@@ -55,12 +57,18 @@ int Site::count_fed(const int fish_id) const {
 }
 
 void Site::feed_fish(const int fish_id){ 
-    for(unsigned int i = fish[fish_id].size()-1; i>=0; i--)
+    for(unsigned int i=0;i<fish[fish_id].size(); i++)
         if(fish[fish_id][i]->is_hungry())
             fish[fish_id][i]->feed();
 }
 
-void Site::kill_fish(const int fish_id){
-    for(unsigned int i = fish[fish_id].size()-1; i>=0; i--)
-       del_fish(fish_id, i, 1);
+int Site::kill_fish(const int fish_id){
+    int sum = 0;
+
+    for(int i = (fish[fish_id].size()-1); i>=0; i--){
+        del_fish(fish_id, i, 1);
+        sum++;
+    }
+
+    return sum;
 }

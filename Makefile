@@ -12,7 +12,10 @@ TARGET = fish_tank
 all: $(FILES)
 	$(CC) $(CFLAGS) -o $(TARGET) $^ $(LDFLAGS)
 
-.PHONY: clean
+.PHONY: test clean
+
+test: all
+	./$(TARGET)
 
 clean:
 	$(RM) $(OBJECTS) $(TARGET)

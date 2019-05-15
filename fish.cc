@@ -1,6 +1,8 @@
 #include <cstdlib>
 #include "fish.h"
 
+#include <iostream>
+
 Fish::Fish(){
     moves=0;
     hungry=true;
@@ -17,7 +19,7 @@ int Fish::get_moves() const {
 }
 
 void Fish::feed(){
-    hungry = 0;
+    hungry = false;
 }
 
 bool Fish::is_hungry() const {
@@ -31,6 +33,8 @@ Minnow::Minnow(){
 
 void Minnow::move(const int *src, int *dest){
     int dx[3];
+
+    moves++;
 
     while(true){
         dx[0] = (rand()%3)-1; dx[1] = (rand()%3)-1; dx[2] = (rand()%3)-1;
@@ -49,6 +53,8 @@ Tuna::Tuna(){
 void Tuna::move(const int *src, int *dest){
     int dx[3];
     
+    moves++;
+
     for(int i=0;i<3;i++){
         dx[i] = rand()%2 > 0 ? 1 : -1;
         dest[i] = ((( src[i]+dx[i])%5 ) + 5 )%5;
@@ -64,6 +70,7 @@ void Shark::move(const int *src, int *dest){
     int perp = rand()%3, len = rand()%2;
 
     //dx[perp] = 0;
+    moves++;
     
     for(int i=0;i<3;i++){
         if(i==perp){
