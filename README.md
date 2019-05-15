@@ -13,6 +13,7 @@ After a fish moves, there are several possible outcomes depending on what is loc
 * If the arrival site contains a tuna and any number of minnows, delete all minnows at the arrival site.
 * If the arrival site contains at least one tuna and at least one shark, delete a tuna at the arrival site.
 * Feeding frenzy: if the arrival site contains a shark, delete all minnows at the arrival site and at any neighboring sites.
+
 Note that based on the occupancy of the arrival site, multiple outcomes are possible. If this is the case, choose one of the possible outcomes with equal probability.  Additionally, (before the outcome is chosen) if any shark or tuna moves 5 times without eating, it dies and must be deleted.
 
 The system evolves by first choosing a species of fish at random from all extant species. Then a single fish
