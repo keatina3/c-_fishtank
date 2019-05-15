@@ -16,6 +16,10 @@ int Fish::get_moves() const {
     return moves;
 }
 
+void Fish::feed(){
+    hungry = 0;
+}
+
 bool Fish::is_hungry() const {
     bool hungry = this->hungry;
     return hungry;

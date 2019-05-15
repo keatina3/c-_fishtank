@@ -14,6 +14,7 @@ public:
     int get_id() const;
     int get_moves() const;
     bool is_hungry() const;
+    void feed();
     virtual void move(const int *src, int *coords)=0;
 };
 

@@ -16,6 +16,15 @@ public:
     void sweep();
     bool fish_present(const int *site, const int fish_id) const;
     void move(const int *site, const int fish_id);
+
+    int check_outcomes(const int *site);
+
+    void minnow_breed(const int *site);
+    void tuna_breed(const int *site);
+    void shark_breed(const int *site);
+    void tuna_feed(const int *site);
+    void shark_feed(const int *site);
+    void feeding_frenzy(const int *site);
 };
 
 #endif

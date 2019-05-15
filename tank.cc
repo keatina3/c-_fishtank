@@ -61,7 +61,7 @@ void Tank::sweep(){
     p_move = rand()%10;
      
     if(p_move!=0)
-        move(dest, fish_id);
+        move(src, fish_id);
     else
         dest[0] = src[0]; dest[1] = src[1]; dest[2] = src[2];
 }
@@ -92,4 +92,82 @@ void Tank::move(const int *site, const int fish_id){
 
     dest->add_fish(fish_tmp);
     src->del_fish(fish_id, rand_fish, 0);
+}
+
+int Tank::check_outcomes(const int *site){
+
+}
+
+void Tank::minnow_breed(const int *site){
+    Fish *tmp;
+    
+    for(int i=0;i<3;i++){
+        tmp = new Minnow();
+        tank[site[0]][site[1]][site[2]].add_fish(tmp);
+    }
+}
+
+void Tank::tuna_breed(const int *site){
+    Fish *tmp;
+
+    tmp = new Tuna();
+    tank[site[0]][site[1]][site[2]].add_fish(tmp);
+}
+
+void Tank::shark_breed(const int *site){
+    Fish *tmp;
+    
+    tmp = new Shark();
+    tank[site[0]][site[1]][site[2]].add_fish(tmp);
+}
+
+void Tank::tuna_feed(const int *site){
+    Site *src;
+
+    src = &tank[site[0]][site[1]][site[2]];
+
+    // need other way to fix this //
+    //for(int i=src->get_count(0)-1; i>=0; i--)
+    //    src->del_fish(0, i, 1);
+    src->kill_fish(0);
+
+    src->feed_fish(1);
+}
+
+void Tank::shark_feed(const int *site){
+    Site *src;
+    int count;
+
+    src = &tank[site[0]][site[1]][site[2]];
+    count = src->get_count(1);
+
+    src->del_fish(1, rand()%count, 1);
+
+    src->feed_fish(2);
+}
+
+void Tank::feeding_frenzy(const int *site){
+    Site *src, *nbr_site;
+    int nbr[3];
+
+    src = &tank[site[0]][site[1]][site[2]];
+
+    // need other way to fix this //
+    //for(int i=src->get_count(0)-1; i>=0; i--)
+    //    src->del_fish(0, i, 1);
+    src->kill_fish(0);
+
+    for(int i=-1;i<2;i++){
+        nbr[0] = ((( site[0]+i )%5) + 5 )%5;
+        for(int j=-1;i<2;j++){
+            nbr[1] = ((( site[1]+j )%5) + 5 )%5;
+            for(int k=-1;k<2;k++){            
+                nbr[2] = ((( site[2]+k )%5) + 5 )%5;
+                nbr_site = &tank[nbr[0]][nbr[1]][nbr[2]];
+                nbr_site->kill_fish(0);
+            }
+        }
+    }
+    
+    src->feed_fish(2);
 }
